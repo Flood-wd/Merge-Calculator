@@ -25,7 +25,7 @@ tower_data = load_data()
 st.title("タワー統合計算")
 
 target_tower_type = st.selectbox("ベースタワーの種類を選択", list(tower_data.keys()))
-base_level = st.number_input("ベースタワーの初期レベル", min_value=1, max_value=50, step=1)
+base_level = st.number_input("ベースタワーの初期レベル", min_value=1, max_value=225, step=1)
 
 st.subheader("素材タワーの入力")
 num_materials = st.number_input("素材タワーの数", min_value=1, max_value=20, step=1)
