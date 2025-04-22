@@ -19,110 +19,102 @@ def load_data():
         "Mage/Lightning": df_mage_lightning
     }
 
-df_dict = load_data()
+tower_data = load_data()
 
-# --- 統合後のレベルを計算 ---
-def calculate_merged_level(base_df, base_level, material_list):
-    # ベースの累積値
-    base_rubble = base_df[base_df['level'] == base_level]['culmative_rubble'].values[0]
-    base_xp = base_df[base_df['level'] == base_level]['XP_culmative'].values[0]
-
-    # 素材の合計
-    total_rubble = 0
-    total_xp = 0
-    resource_after = {
-        "ElectrumBar": 0,
-        "ElementalEmber": 0,
-        "CosmicCharge": 0,
-        "time(days)": 0
-    }
-
-    for material in material_list:
-        mat_df = df_dict[material['type']]
-        row = mat_df[mat_df['level'] == material['level']]
-        if not row.empty:
-            count = material['count']
-            total_rubble += int(row['culmative_rubble'].values[0]) * count
-            total_xp += int(row['XP_culmative'].values[0]) * count
-            resource_after["ElectrumBar"] += int(row['electrumBar_culmative'].values[0]) * count
-            resource_after["ElementalEmber"] += int(row['elementalEmber_culmative'].values[0]) * count
-            resource_after["CosmicCharge"] += int(row['cosmicCharge_culmative'].values[0]) * count
-            resource_after["time(days)"] += float(row['time_culmative(days)'].values[0]) * count
-
-    # 合計値を加算
-    merged_rubble = base_rubble + total_rubble
-    merged_xp = base_xp + total_xp
-
-    # 統合後のレベルを求める
-    result_df = base_df[base_df['culmative_rubble'] <= merged_rubble]
-    if result_df.empty:
-        final_level = base_level
-    else:
-        final_level = result_df.iloc[-1]['level']
-
-    # リソース比較
-    target_row = base_df[base_df['level'] == final_level]
-    resource_before = {
-        "ElectrumBar": int(target_row['electrumBar_culmative'].values[0]) - base_df[base_df['level'] == base_level]['electrumBar_culmative'].values[0],
-        "ElementalEmber": int(target_row['elementalEmber_culmative'].values[0]) - base_df[base_df['level'] == base_level]['elementalEmber_culmative'].values[0],
-        "CosmicCharge": int(target_row['cosmicCharge_culmative'].values[0]) - base_df[base_df['level'] == base_level]['cosmicCharge_culmative'].values[0],
-        "time(days)": float(target_row['time_culmative(days)'].values[0]) - base_df[base_df['level'] == base_level]['time_culmative(days)'].values[0]
-    }
-
-    # 効率
-    efficiency = round((total_rubble / (target_row['culmative_rubble'].values[0] - base_rubble)) * 100, 1) if (target_row['culmative_rubble'].values[0] - base_rubble) > 0 else 100
-
-    return int(final_level), efficiency, resource_before, resource_after
-
-# --- UI部 ---
+# --- UI ---
 st.title("タワー統合計算")
 
-tower_type = st.selectbox("統合対象タワーを選択", list(df_dict.keys()))
-initial_level = st.number_input("初期レベル", min_value=1, max_value=200, step=1)
+target_tower_type = st.selectbox("ベースタワーの種類を選択", list(tower_data.keys()))
+base_level = st.number_input("ベースタワーの初期レベル", min_value=1, max_value=50, step=1)
 
-st.markdown("### 統合に使用するタワー")
+st.subheader("素材タワーの入力")
+num_materials = st.number_input("素材タワーの数", min_value=1, max_value=20, step=1)
 
-material_rows = []
-if "material_rows" not in st.session_state:
-    st.session_state.material_rows = 1
+# テンプレート行の表示
+for i in range(num_materials):
+    cols = st.columns([2, 2])
+    with cols[0]:
+        st.selectbox(f"素材タワー{i+1}の種類", list(tower_data.keys()), key=f"type_{i}")
+    with cols[1]:
+        st.number_input(f"素材タワー{i+1}のレベル", min_value=1, max_value=50, step=1, key=f"level_{i}")
 
-col1, col2 = st.columns([2, 1])
-with col1:
-    if st.button("テンプレート行を追加"):
-        st.session_state.material_rows += 1
-with col2:
-    if st.button("行をリセット"):
-        st.session_state.material_rows = 1
-
-for i in range(st.session_state.material_rows):
-    st.markdown(f"#### 素材タワー {i+1}")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        mat_type = st.selectbox(f"タワー種別 {i+1}", list(df_dict.keys()), key=f"type_{i}")
-    with col2:
-        mat_level = st.number_input(f"レベル {i+1}", min_value=1, max_value=200, step=1, key=f"level_{i}")
-    with col3:
-        mat_count = st.number_input(f"個数 {i+1}", min_value=1, max_value=50, step=1, key=f"count_{i}")
-    material_rows.append({
-        "type": mat_type,
-        "level": mat_level,
-        "count": mat_count
-    })
-
+# --- 統合実行 ---
 if st.button("計算実行"):
-    df_target = df_dict[tower_type]
-    merged_level, efficiency, before_res, after_res = calculate_merged_level(df_target, initial_level, material_rows)
 
-    st.subheader("統合後のレベル")
-    st.write(f"Lv.{merged_level}")
+    df_target = tower_data[target_tower_type]
+    base_row = df_target[df_target['level'] == base_level]
+    if base_row.empty:
+        st.error("無効なベースタワーレベルです")
+    else:
+        base_rubble = base_row['culmative_rubble'].values[0]
+        base_xp = base_row['XP_culmative'].values[0]
 
-    st.subheader("リソース活用効率")
-    st.write(f"{efficiency}%")
+        total_material_rubble = 0
+        total_material_xp = 0
+        resource_costs = {"electrumBar": 0, "elementalEmber": 0, "cosmicCharge": 0, "time": 0}
 
-    st.subheader("リソース比較表")
-    df_compare = pd.DataFrame({
-        "Resource": ["ElectrumBar", "ElementalEmber", "CosmicCharge", "Time (days)"],
-        "Before Merge": [before_res["ElectrumBar"], before_res["ElementalEmber"], before_res["CosmicCharge"], before_res["time(days)"]],
-        "After Merge": [after_res["ElectrumBar"], after_res["ElementalEmber"], after_res["CosmicCharge"], after_res["time(days)"]],
-    })
-    st.dataframe(df_compare)
+        # 素材の合計ラブル・XP・リソース
+        for i in range(num_materials):
+            mat_type = st.session_state[f"type_{i}"]
+            mat_level = st.session_state[f"level_{i}"]
+            df_mat = tower_data[mat_type]
+            row = df_mat[df_mat['level'] == mat_level]
+            if not row.empty:
+                total_material_rubble += row['culmative_rubble'].values[0]
+                total_material_xp += row['XP_culmative'].values[0]
+                resource_costs["electrumBar"] += row['electrumBar_culmative'].values[0]
+                resource_costs["elementalEmber"] += row['elementalEmber_culmative'].values[0]
+                resource_costs["cosmicCharge"] += row['cosmicCharge_culmative'].values[0]
+                resource_costs["time"] += row['time_culmative(days)'].values[0]
+
+        # 有効ラブル（ロス考慮後）
+        effective_rubble = max(total_material_rubble * 0.95 - 200, 0)
+        total_available_rubble = base_rubble + effective_rubble
+        total_available_xp = base_xp + total_material_xp
+
+        # 到達可能な最大レベルを探索（ラブルとXPの両方を満たす）
+        possible_levels = df_target[
+            (df_target['culmative_rubble'] <= total_available_rubble) &
+            (df_target['XP_culmative'] <= total_available_xp)
+        ]
+        if possible_levels.empty:
+            new_level = base_level
+        else:
+            new_level = possible_levels['level'].max()
+
+        final_row = df_target[df_target['level'] == new_level]
+        new_rubble = final_row['culmative_rubble'].values[0]
+        new_xp = final_row['XP_culmative'].values[0]
+
+        rubble_gain = new_rubble - base_rubble
+        efficiency = round((rubble_gain / total_material_rubble) * 100, 1) if total_material_rubble > 0 else 0
+
+        # --- 結果出力 ---
+        st.markdown(f"### 統合後のレベル: **Lv.{new_level}**")
+        st.markdown(f"#### リソース活用効率: {efficiency}％")
+
+        # --- リソース比較表 ---
+        levelup_costs = {
+            "electrumBar": final_row['electrumBar_culmative'].values[0] - base_row['electrumBar_culmative'].values[0],
+            "elementalEmber": final_row['elementalEmber_culmative'].values[0] - base_row['elementalEmber_culmative'].values[0],
+            "cosmicCharge": final_row['cosmicCharge_culmative'].values[0] - base_row['cosmicCharge_culmative'].values[0],
+            "time": final_row['time_culmative(days)'].values[0] - base_row['time_culmative(days)'].values[0],
+        }
+
+        resource_df = pd.DataFrame({
+            "リソース": ["ElectrumBar", "ElementalEmber", "CosmicCharge", "時間（日）"],
+            "レベルアップ": [
+                levelup_costs["electrumBar"],
+                levelup_costs["elementalEmber"],
+                levelup_costs["cosmicCharge"],
+                levelup_costs["time"]
+            ],
+            "統合（素材合計）": [
+                resource_costs["electrumBar"],
+                resource_costs["elementalEmber"],
+                resource_costs["cosmicCharge"],
+                resource_costs["time"]
+            ]
+        })
+        st.subheader("リソース比較")
+        st.dataframe(resource_df)
