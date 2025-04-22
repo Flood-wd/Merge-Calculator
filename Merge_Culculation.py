@@ -4,12 +4,12 @@ import pandas as pd
 # --- データ読み込み関数 ---
 @st.cache_data
 def load_data():
-    df_cosmic_oculus = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/TowerMergeOptimizer/main/Data_Cosmic:Oculus.csv")
-    df_crystal_pylon = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/TowerMergeOptimizer/main/Data_Crystal:Pylon.csv")
-    df_volt = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/TowerMergeOptimizer/main/Data_Volt.csv")
-    df_archmage = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/TowerMergeOptimizer/main/Data_ArchMage.csv")
-    df_flak = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/TowerMergeOptimizer/main/Data_Flak.csv")
-    df_mage_lightning = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/TowerMergeOptimizer/main/Data_Mage:Lightning.csv")
+    df_cosmic_oculus = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/Merge-Calculator/main/Data_Cosmic:Oculus.csv")
+    df_crystal_pylon = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/Merge-Calculator/main/Data_Crystal:Pylon.csv")
+    df_volt = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/Merge-Calculator/main/Data_Volt.csv")
+    df_archmage = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/Merge-Calculator/main/Data_ArchMage.csv")
+    df_flak = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/Merge-Calculator/main/Data_Flak.csv")
+    df_mage_lightning = pd.read_csv("https://raw.githubusercontent.com/Flood-wd/Merge-Calculator/main/Data_Mage:Lightning.csv")
     return {
         "Cosmic/Oculus": df_cosmic_oculus,
         "Crystal/Pylon": df_crystal_pylon,
