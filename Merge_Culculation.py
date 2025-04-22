@@ -36,7 +36,7 @@ for i in range(num_materials):
     with cols[0]:
         st.selectbox(f"素材タワー{i+1}の種類", list(tower_data.keys()), key=f"type_{i}")
     with cols[1]:
-        st.number_input(f"素材タワー{i+1}のレベル", min_value=1, max_value=50, step=1, key=f"level_{i}")
+        st.number_input(f"素材タワー{i+1}のレベル", min_value=1, max_value=225, step=1, key=f"level_{i}")
 
 # --- 統合実行 ---
 if st.button("計算実行"):
