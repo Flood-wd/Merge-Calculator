@@ -24,8 +24,11 @@ tower_data = load_data()
 # --- UI ---
 st.title("タワー統合計算")
 
-target_tower_type = st.selectbox("ベースタワーの種類を選択", list(tower_data.keys()))
-base_level = st.number_input("ベースタワーの初期レベル", min_value=1, max_value=225, step=1)
+col1, col2 = st.columns(2)
+with col1:
+    target_tower_type = st.selectbox("対象タワー", list(tower_data.keys()))
+with col2:
+    base_level = st.number_input("初期Lv", min_value=10, max_value=225, step=1)
 
 st.subheader("素材タワーの入力")
 num_materials = st.number_input("素材タワーの数", min_value=1, max_value=20, step=1)
@@ -34,9 +37,9 @@ num_materials = st.number_input("素材タワーの数", min_value=1, max_value=
 for i in range(num_materials):
     cols = st.columns([2, 2])
     with cols[0]:
-        st.selectbox(f"素材タワー{i+1}の種類", list(tower_data.keys()), key=f"type_{i}")
+        st.selectbox(f"タワー{i+1}", list(tower_data.keys()), key=f"type_{i}")
     with cols[1]:
-        st.number_input(f"素材タワー{i+1}のレベル", min_value=1, max_value=225, step=1, key=f"level_{i}")
+        st.number_input(f"タワー{i+1}のLv", min_value=10, max_value=225, step=1, key=f"level_{i}")
 
 # --- 統合実行 ---
 if st.button("計算実行"):
