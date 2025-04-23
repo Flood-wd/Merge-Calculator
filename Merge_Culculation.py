@@ -42,9 +42,7 @@ for i in range(num_materials):
 
 # 実行ボタン
 if st.button("計算実行"):
-    from tower_merge_logic import calculate_merge_result
     result = calculate_merge_result(tower_data, target_tower_type, base_level, num_materials)
-    
     st.markdown(f"### 統合後のレベル: **Lv.{result['new_level']}**")
     st.markdown(f"#### リソース活用効率: {result['efficiency']}％")
     
