@@ -24,7 +24,7 @@ tower_data = load_data()
 # --- UI ---
 st.title("タワー統合計算")
 
-col1, col2 = st.columns([2, 1])
+col1, col2 = st.columns([3, 1])
 with col1:
     target_tower_type = st.selectbox("対象タワー", list(tower_data.keys()))
 with col2:
@@ -35,7 +35,7 @@ num_materials = st.number_input("素材タワーの数", min_value=1, max_value=
 
 # テンプレート行の表示
 for i in range(num_materials):
-    cols = st.columns([2, 1])
+    cols = st.columns([3, 1])
     with cols[0]:
         st.selectbox(f"タワー{i+1}", list(tower_data.keys()), key=f"type_{i}")
     with cols[1]:
