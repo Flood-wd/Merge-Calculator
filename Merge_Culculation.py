@@ -21,37 +21,6 @@ def load_data():
 
 tower_data = load_data()
 
-# --- UI表示 ---
-st.title("タワー統合計算")
-
-col1, col2 = st.columns([3, 1])
-with col1:
-    target_tower_type = st.selectbox("対象タワー", list(tower_data.keys()))
-with col2:
-    base_level = st.number_input("初期Lv", min_value=10, max_value=225, step=1)
-
-st.subheader("素材タワーの入力")
-num_materials = st.number_input("素材タワーの数", min_value=1, max_value=20, step=1)
-
-for i in range(num_materials):
-    cols = st.columns([3, 1])
-    with cols[0]:
-        st.selectbox(f"タワー{i+1}", list(tower_data.keys()), key=f"type_{i}")
-    with cols[1]:
-        st.number_input(f"タワー{i+1}のLv", min_value=10, max_value=225, step=1, key=f"level_{i}")
-
-# 実行ボタン
-if st.button("計算実行"):
-    result = calculate_merge_result(tower_data, target_tower_type, base_level, num_materials)
-    st.markdown(f"### 統合後のレベル: **Lv.{result['new_level']}**")
-    st.markdown(f"#### リソース活用効率: {result['efficiency']}％")
-    
-    st.subheader("リソース比較")
-    st.dataframe(result["resource_df"])
-
-
-
-
 def calculate_merge_result(tower_data, target_tower_type, base_level, num_materials):
     df_target = tower_data[target_tower_type]
     base_row = df_target[df_target['level'] == base_level]
@@ -133,3 +102,31 @@ def calculate_merge_result(tower_data, target_tower_type, base_level, num_materi
         "efficiency": efficiency,
         "resource_df": resource_df
     }
+
+# --- UI表示 ---
+st.title("タワー統合計算")
+
+col1, col2 = st.columns([3, 1])
+with col1:
+    target_tower_type = st.selectbox("対象タワー", list(tower_data.keys()))
+with col2:
+    base_level = st.number_input("初期Lv", min_value=10, max_value=225, step=1)
+
+st.subheader("素材タワーの入力")
+num_materials = st.number_input("素材タワーの数", min_value=1, max_value=20, step=1)
+
+for i in range(num_materials):
+    cols = st.columns([3, 1])
+    with cols[0]:
+        st.selectbox(f"タワー{i+1}", list(tower_data.keys()), key=f"type_{i}")
+    with cols[1]:
+        st.number_input(f"タワー{i+1}のLv", min_value=10, max_value=225, step=1, key=f"level_{i}")
+
+# 実行ボタン
+if st.button("計算実行"):
+    result = calculate_merge_result(tower_data, target_tower_type, base_level, num_materials)
+    st.markdown(f"### 統合後のレベル: **Lv.{result['new_level']}**")
+    st.markdown(f"#### リソース活用効率: {result['efficiency']}％")
+    
+    st.subheader("リソース比較")
+    st.dataframe(result["resource_df"])
