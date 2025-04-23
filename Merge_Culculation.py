@@ -36,7 +36,7 @@ def calculate_merge_result(tower_data, target_tower_type, base_level, num_materi
         "electrumBar": 0,
         "elementalEmber": 0,
         "cosmicCharge": 0,
-        "lumber": 0,
+        "Lumber": 0,
         "time": 0
     }
 
@@ -51,7 +51,7 @@ def calculate_merge_result(tower_data, target_tower_type, base_level, num_materi
             resource_costs["electrumBar"] += row['electrumBar_cumulative'].values[0]
             resource_costs["elementalEmber"] += row['elementalEmber_cumulative'].values[0]
             resource_costs["cosmicCharge"] += row['cosmicCharge_cumulative'].values[0]
-            resource_costs["lumber"] += row['lumber_cumulative'].values[0]
+            resource_costs["Lumber"] += row['Lumber_cumulative'].values[0]
             resource_costs["time"] += row['time_cumulative(days)'].values[0]
 
     effective_rubble = max(total_material_rubble * 0.95 - 200, 0)
@@ -75,7 +75,7 @@ def calculate_merge_result(tower_data, target_tower_type, base_level, num_materi
         "electrumBar": final_row['electrumBar_cumulative'].values[0] - base_row['electrumBar_cumulative'].values[0],
         "elementalEmber": final_row['elementalEmber_cumulative'].values[0] - base_row['elementalEmber_cumulative'].values[0],
         "cosmicCharge": final_row['cosmicCharge_cumulative'].values[0] - base_row['cosmicCharge_cumulative'].values[0],
-        "lumber": final_row['lumber_cumulative'].values[0] - base_row['lumber_cumulative'].values[0],
+        "Lumber": final_row['Lumber_cumulative'].values[0] - base_row['Lumber_cumulative'].values[0],
         "time": final_row['time_cumulative(days)'].values[0] - base_row['time_cumulative(days)'].values[0],
     }
 
@@ -85,14 +85,14 @@ def calculate_merge_result(tower_data, target_tower_type, base_level, num_materi
             levelup_costs["electrumBar"],
             levelup_costs["elementalEmber"],
             levelup_costs["cosmicCharge"],
-            levelup_costs["lumber"],
+            levelup_costs["Lumber"],
             levelup_costs["time"]
         ],
         "統合（素材合計）": [
             resource_costs["electrumBar"],
             resource_costs["elementalEmber"],
             resource_costs["cosmicCharge"],
-            resource_costs["lumber"],
+            resource_costs["Lumber"],
             resource_costs["time"]
         ]
     })
